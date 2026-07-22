@@ -1,0 +1,2632 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webster Credit Union — Classroom Bank</title>
+<!-- BUILD MARKER: bg-fix-v2 — if you view-source on your live site and don't see
+     this exact comment, the deployed file is out of date and needs to be re-uploaded. -->
+<!--
+  BACKGROUND IMAGES: to add your own background art, open the <style> block
+  below and find "BACKGROUND IMAGE PLACEHOLDERS" near the top (inside :root).
+  Set --login-bg-image and/or --dashboard-bg-image to url('your-image-link').
+-->
+<style>
+  :root{
+    --ink:#0f1e17;
+    --paper:#f6f3ec;
+    --vault:#14342b;
+    --vault-2:#1c4636;
+    --mint:#2fae7a;
+    --mint-deep:#1e8a5f;
+    --gold:#c8a24a;
+    --line:#d9d2c1;
+    --danger:#b3413a;
+    --muted:#6b6459;
+    --card:#ffffff;
+
+```
+/* ============================================================
+   BACKGROUND IMAGE PLACEHOLDERS
+   Drop your own image URLs (or a local file path once uploaded
+   to your own hosting) into the two lines below to put a custom
+   background on the login screen and/or the student dashboard.
+   Leave them as none and the app keeps its plain color design.
+   Example:  --login-bg-image: url('https://yoursite.com/login-bg.jpg');
+   ============================================================ */
+--login-bg-image: none;
+--dashboard-bg-image: none;
+
+font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+```
+
+}
+*{box-sizing:border-box;}
+body{
+margin:0;
+background:var(–paper);
+color:var(–ink);
+min-height:100vh;
+}
+.mono{
+font-family:‘SF Mono’,‘Courier New’,monospace;
+letter-spacing:0.02em;
+}
+
+/* ––––– Gate / role picker ––––– */
+#gate{
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+background:
+var(–login-bg-image),
+radial-gradient(circle at 20% 15%, rgba(47,174,122,0.15), transparent 45%),
+radial-gradient(circle at 80% 85%, rgba(200,162,74,0.12), transparent 40%),
+var(–vault);
+background-size: cover, auto, auto, auto;
+background-position: center, initial, initial, initial;
+background-repeat: no-repeat, initial, initial, initial;
+padding:24px;
+}
+.gate-card{
+background:var(–paper);
+max-width:460px;
+width:100%;
+border-radius:4px;
+padding:44px 40px;
+box-shadow:0 30px 60px rgba(0,0,0,0.35);
+position:relative;
+overflow:hidden;
+}
+.gate-card::before{
+content:””;
+position:absolute;
+top:0;left:0;right:0;
+height:6px;
+background:linear-gradient(90deg, var(–mint), var(–gold));
+}
+.brand{
+display:flex;
+align-items:center;
+gap:12px;
+margin-bottom:6px;
+user-select:none;
+}
+.brand-mark{
+width:38px;height:38px;
+border-radius:50%;
+background:var(–vault);
+display:flex;align-items:center;justify-content:center;
+color:var(–gold);
+font-weight:700;
+font-size:12px;
+flex-shrink:0;
+}
+.brand-name{
+font-size:26px;
+font-weight:700;
+letter-spacing:0.01em;
+}
+.brand-sub{
+color:var(–muted);
+font-size:13px;
+margin:0 0 32px 50px;
+font-style:italic;
+}
+.gate-tabs{
+display:flex;
+gap:6px;
+background:#ece7da;
+padding:4px;
+border-radius:8px;
+margin-bottom:26px;
+}
+.gate-tab{
+flex:1;
+text-align:center;
+padding:10px 8px;
+border-radius:6px;
+cursor:pointer;
+font-size:14px;
+font-weight:600;
+color:var(–muted);
+transition:all .15s;
+user-select:none;
+}
+.gate-tab.active{
+background:var(–card);
+color:var(–vault);
+box-shadow:0 1px 3px rgba(0,0,0,0.12);
+}
+.field{
+margin-bottom:16px;
+}
+.field label{
+display:block;
+font-size:12px;
+text-transform:uppercase;
+letter-spacing:0.08em;
+color:var(–muted);
+margin-bottom:6px;
+font-family:‘SF Mono’,‘Courier New’,monospace;
+}
+.field input{
+width:100%;
+padding:12px 14px;
+border:1.5px solid var(–line);
+border-radius:6px;
+font-size:15px;
+background:var(–card);
+color:var(–ink);
+font-family:inherit;
+}
+.field input:focus{
+outline:none;
+border-color:var(–mint-deep);
+}
+.btn{
+display:inline-flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+border:none;
+border-radius:6px;
+padding:13px 20px;
+font-size:15px;
+font-weight:700;
+cursor:pointer;
+font-family:inherit;
+transition:transform .1s, box-shadow .15s;
+width:100%;
+}
+.btn:active{ transform: scale(0.985); }
+.btn-primary{
+background:var(–vault);
+color:var(–paper);
+}
+.btn-primary:hover{ background:var(–vault-2); }
+.btn-mint{
+background:var(–mint);
+color:#06231a;
+}
+.btn-mint:hover{ background:var(–mint-deep); color:var(–paper); }
+.btn-ghost{
+background:transparent;
+border:1.5px solid var(–line);
+color:var(–ink);
+}
+.btn-danger{
+background:transparent;
+border:1.5px solid var(–danger);
+color:var(–danger);
+}
+.btn-sm{ padding:8px 14px; font-size:13px; width:auto; }
+.err{
+background:#fbeceb;
+border:1px solid var(–danger);
+color:var(–danger);
+padding:10px 12px;
+border-radius:6px;
+font-size:13px;
+margin-bottom:16px;
+}
+.hint{
+font-size:12px;
+color:var(–muted);
+margin-top:18px;
+line-height:1.5;
+}
+.hidden{ display:none !important; }
+
+/* ––––– App shell ––––– */
+#app{
+min-height:100vh;
+background-color:var(–paper);
+background-image:var(–dashboard-bg-image);
+background-size:cover;
+background-position:center;
+background-repeat:no-repeat;
+background-attachment:fixed;
+}
+.topbar{
+background-color:var(–vault);
+color:var(–paper);
+padding:16px 24px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+position:relative;
+z-index:2;
+}
+.topbar .brand-mini{
+display:flex;
+align-items:center;
+gap:10px;
+font-weight:700;
+font-size:18px;
+}
+.topbar .brand-mini .brand-mark{ width:30px;height:30px;font-size:10px; }
+.topbar-right{
+display:flex;
+align-items:center;
+gap:14px;
+font-size:13px;
+}
+.pill{
+background:rgba(255,255,255,0.1);
+padding:6px 12px;
+border-radius:20px;
+font-family:‘SF Mono’,‘Courier New’,monospace;
+font-size:12px;
+}
+.logout-link{
+color:var(–paper);
+opacity:0.75;
+cursor:pointer;
+text-decoration:underline;
+font-size:13px;
+}
+.logout-link:hover{ opacity:1; }
+.icon-btn{
+color:var(–paper);
+opacity:0.85;
+cursor:pointer;
+display:flex;
+align-items:center;
+}
+.icon-btn:hover{ opacity:1; }
+
+.wrap{
+max-width:960px;
+margin:0 auto;
+padding:28px 20px 80px;
+}
+
+/* ––––– Balance hero ––––– */
+.hero{
+background-color:#14342b !important;
+background-image:linear-gradient(135deg, #14342b 0%, #1c4636 100%) !important;
+color:var(–paper);
+border-radius:10px;
+padding:30px 28px;
+position:relative;
+overflow:hidden;
+margin-bottom:22px;
+z-index:1;
+}
+.hero::after{
+content:””;
+position:absolute;
+right:-40px; top:-40px;
+width:180px;height:180px;
+border:1px solid rgba(200,162,74,0.3);
+border-radius:50%;
+}
+.hero-label{
+font-size:12px;
+text-transform:uppercase;
+letter-spacing:0.12em;
+color:var(–gold);
+font-family:‘SF Mono’,‘Courier New’,monospace;
+margin-bottom:8px;
+}
+.hero-balance{
+font-size:44px;
+font-weight:700;
+font-family:‘SF Mono’,‘Courier New’,monospace;
+letter-spacing:-0.01em;
+}
+.hero-sub{
+font-size:13px;
+color:rgba(246,243,236,0.7);
+margin-top:6px;
+}
+.hero-acct{
+margin-top:18px;
+font-size:13px;
+color:rgba(246,243,236,0.85);
+font-family:‘SF Mono’,‘Courier New’,monospace;
+}
+
+/* ––––– Action grid ––––– */
+.actions{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:12px;
+margin-bottom:26px;
+}
+.action-btn{
+background-color:var(–vault);
+color:var(–paper);
+border:none;
+border-radius:10px;
+padding:18px 10px;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:8px;
+cursor:pointer;
+font-family:inherit;
+font-size:13px;
+font-weight:700;
+transition:background .15s;
+position:relative;
+z-index:1;
+}
+.action-btn:hover{ background:var(–vault-2); }
+.action-btn svg{ width:22px;height:22px; }
+
+/* ––––– Panels ––––– */
+.panel{
+background-color:#ffffff !important;
+border-radius:10px;
+border:1px solid var(–line);
+margin-bottom:22px;
+overflow:hidden;
+position:relative;
+z-index:1;
+}
+.panel-head{
+padding:18px 22px;
+border-bottom:1px solid var(–line);
+display:flex;
+align-items:center;
+justify-content:space-between;
+}
+.panel-title{
+font-size:18px;
+font-weight:700;
+}
+.panel-body{ padding:22px; }
+
+.form-row{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:14px;
+}
+@media (max-width:640px){
+.form-row{ grid-template-columns:1fr; }
+.actions{ grid-template-columns:repeat(2,1fr); }
+}
+
+select{
+width:100%;
+padding:12px 14px;
+border:1.5px solid var(–line);
+border-radius:6px;
+font-size:15px;
+background:var(–card);
+color:var(–ink);
+font-family:inherit;
+}
+
+/* ––––– Transactions ––––– */
+.tx-row{
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:16px 22px;
+border-bottom:1px solid var(–line);
+gap:16px;
+}
+.tx-row:last-child{ border-bottom:none; }
+.tx-left{ display:flex; align-items:center; gap:14px; min-width:0; }
+.tx-icon{
+width:38px;height:38px;
+border-radius:50%;
+display:flex;align-items:center;justify-content:center;
+flex-shrink:0;
+font-size:15px;
+font-weight:700;
+}
+.tx-icon.in{ background:#e3f5ec; color:var(–mint-deep); }
+.tx-icon.out{ background:#f3e9e2; color:var(–gold); }
+.tx-meta{ min-width:0; }
+.tx-name{ font-weight:700; font-size:14.5px; }
+.tx-date{ color:var(–muted); font-size:12.5px; margin-top:2px; }
+.tx-amt{
+font-family:‘SF Mono’,‘Courier New’,monospace;
+font-weight:700;
+font-size:15px;
+white-space:nowrap;
+}
+.tx-amt.pos{ color:var(–mint-deep); }
+.tx-amt.neg{ color:var(–ink); }
+.empty-state{
+padding:40px 22px;
+text-align:center;
+color:var(–muted);
+font-size:14px;
+}
+
+/* ––––– Admin table ––––– */
+table{ width:100%; border-collapse:collapse; }
+th{
+text-align:left;
+font-size:11px;
+text-transform:uppercase;
+letter-spacing:0.08em;
+color:var(–muted);
+font-family:‘SF Mono’,‘Courier New’,monospace;
+padding:10px 22px;
+border-bottom:1px solid var(–line);
+}
+td{
+padding:14px 22px;
+border-bottom:1px solid var(–line);
+font-size:14px;
+}
+tr:last-child td{ border-bottom:none; }
+.badge{
+display:inline-block;
+padding:3px 9px;
+border-radius:20px;
+font-size:11px;
+font-weight:700;
+font-family:‘SF Mono’,‘Courier New’,monospace;
+}
+.badge-mint{ background:#e3f5ec; color:var(–mint-deep); }
+.badge-pending{ background:#f3e9e2; color:var(–gold); }
+.badge-denied{ background:#fbeceb; color:var(–danger); }
+
+.toast{
+position:fixed;
+bottom:24px;
+left:50%;
+transform:translateX(-50%) translateY(20px);
+background:var(–vault);
+color:var(–paper);
+padding:14px 22px;
+border-radius:8px;
+font-size:14px;
+box-shadow:0 10px 30px rgba(0,0,0,0.3);
+opacity:0;
+transition:opacity .25s, transform .25s;
+pointer-events:none;
+z-index:999;
+max-width:90vw;
+}
+.toast.show{
+opacity:1;
+transform:translateX(-50%) translateY(0);
+}
+
+.modal-overlay{
+position:fixed; inset:0;
+background:rgba(15,30,23,0.55);
+display:flex; align-items:center; justify-content:center;
+z-index:500;
+padding:20px;
+}
+.modal{
+background:var(–card);
+border-radius:10px;
+max-width:420px;
+width:100%;
+padding:26px;
+}
+.modal h3{ margin-top:0; }
+.modal-actions{ display:flex; gap:10px; margin-top:20px; }
+.modal-actions .btn{ width:auto; flex:1; }
+
+.creds-box{
+background:#eef7f1;
+border:1px dashed var(–mint-deep);
+border-radius:8px;
+padding:14px 16px;
+margin-top:14px;
+font-family:‘SF Mono’,‘Courier New’,monospace;
+font-size:13.5px;
+line-height:1.8;
+}
+
+.check-upload{
+border:1.5px dashed var(–line);
+border-radius:8px;
+padding:18px;
+text-align:center;
+cursor:pointer;
+color:var(–muted);
+font-size:12.5px;
+line-height:1.5;
+transition:border-color .15s, background .15s;
+background:#fbfaf6;
+}
+.check-upload:hover{ border-color:var(–mint-deep); background:#f3f8f5; }
+.check-upload svg{ margin-bottom:6px; color:var(–muted); }
+.check-preview{
+width:100%;
+max-height:140px;
+object-fit:contain;
+border-radius:6px;
+background:#fff;
+}
+.check-thumb{
+width:70px; height:46px;
+object-fit:cover;
+border-radius:4px;
+border:1px solid var(–line);
+cursor:pointer;
+}
+
+.info-row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:12px 0;
+border-bottom:1px solid var(–line);
+gap:16px;
+}
+.info-row:last-child{ border-bottom:none; }
+.info-label{
+font-size:12px;
+text-transform:uppercase;
+letter-spacing:0.06em;
+color:var(–muted);
+font-family:‘SF Mono’,‘Courier New’,monospace;
+}
+.info-value{
+font-size:15px;
+font-weight:600;
+text-align:right;
+}
+.info-value.mono{ font-family:‘SF Mono’,‘Courier New’,monospace; }
+
+.debit-card{
+background-color:#14342b !important;
+background-image:linear-gradient(135deg, #14342b 0%, #1c4636 100%) !important;
+color:var(–paper);
+border-radius:14px;
+padding:22px;
+position:relative;
+overflow:hidden;
+max-width:340px;
+margin:0 auto;
+z-index:1;
+}
+.debit-card::after{
+content:””;
+position:absolute;
+right:-30px; bottom:-30px;
+width:140px;height:140px;
+border:1px solid rgba(200,162,74,0.3);
+border-radius:50%;
+}
+.debit-card-brand{
+font-size:12px;
+text-transform:uppercase;
+letter-spacing:0.12em;
+color:var(–gold);
+font-family:‘SF Mono’,‘Courier New’,monospace;
+margin-bottom:26px;
+}
+.debit-card-number{
+font-family:‘SF Mono’,‘Courier New’,monospace;
+font-size:19px;
+letter-spacing:0.04em;
+margin-bottom:20px;
+}
+.debit-card-bottom{
+display:flex;
+justify-content:space-between;
+font-size:12px;
+color:rgba(246,243,236,0.75);
+}
+.debit-card-bottom .val{
+color:var(–paper);
+font-family:‘SF Mono’,‘Courier New’,monospace;
+font-size:13px;
+margin-top:3px;
+}
+.card-locked-badge{
+position:absolute;
+top:16px; right:18px;
+background:rgba(0,0,0,0.35);
+color:var(–paper);
+font-size:11px;
+font-weight:700;
+padding:5px 10px;
+border-radius:20px;
+z-index:2;
+}
+
+.banner-carousel{
+position:relative;
+border-radius:10px;
+overflow:hidden;
+margin-bottom:22px;
+background:#e9e4d6;
+aspect-ratio:16/7;
+}
+.banner-slide{
+position:absolute;
+inset:0;
+opacity:0;
+transition:opacity .5s ease;
+}
+.banner-slide.active{ opacity:1; }
+.banner-slide img{
+width:100%;
+height:100%;
+object-fit:cover;
+display:block;
+}
+.banner-dots{
+position:absolute;
+bottom:10px;
+left:0; right:0;
+display:flex;
+justify-content:center;
+gap:6px;
+}
+.banner-dot{
+width:6px;height:6px;
+border-radius:50%;
+background:rgba(255,255,255,0.55);
+}
+.banner-dot.active{ background:#fff; }
+.banner-thumb-wrap{
+position:relative;
+width:90px;
+}
+.banner-thumb{
+width:90px; height:56px;
+object-fit:cover;
+border-radius:6px;
+border:1px solid var(–line);
+}
+.banner-thumb-remove{
+position:absolute;
+top:-6px; right:-6px;
+width:20px;height:20px;
+border-radius:50%;
+background:var(–danger);
+color:#fff;
+border:none;
+font-size:12px;
+line-height:20px;
+text-align:center;
+cursor:pointer;
+padding:0;
+}
+.otp-code-display{
+text-align:center;
+font-family:‘SF Mono’,‘Courier New’,monospace;
+font-size:32px;
+font-weight:700;
+letter-spacing:0.15em;
+color:var(–mint-deep);
+background:#eef7f1;
+border-radius:8px;
+padding:16px;
+margin:16px 0;
+border:1px dashed var(–mint-deep);
+}
+
+h1,h2,h3{ font-family:inherit; margin:0; }
+.section-label{
+font-size:12px;
+text-transform:uppercase;
+letter-spacing:0.1em;
+color:var(–muted);
+font-family:‘SF Mono’,‘Courier New’,monospace;
+margin-bottom:14px;
+}
+</style>
+
+</head>
+<body>
+
+<!-- ============ GATE (single plain login) ============ -->
+
+<div id="gate">
+  <div class="gate-card">
+    <div class="brand" id="brand-trigger">
+      <div class="brand-mark">WCU</div>
+      <div class="brand-name">Webster Credit Union</div>
+    </div>
+    <p class="brand-sub">online banking</p>
+
+```
+<div id="gate-err" class="err hidden"></div>
+
+<!-- plain login (student-facing, no labeling) -->
+<div id="tab-student">
+  <div class="field">
+    <label>Account Number</label>
+    <input type="text" id="stu-acct" placeholder="e.g. 100234" autocomplete="off">
+  </div>
+  <div class="field">
+    <label>PIN</label>
+    <input type="password" id="stu-pin" placeholder="4-digit PIN" autocomplete="off" maxlength="4">
+  </div>
+  <button class="btn btn-mint" onclick="studentLogin()">Log In</button>
+</div>
+
+<!-- admin login: hidden until secret trigger is used -->
+<div id="tab-admin" class="hidden">
+  <div class="field">
+    <label>Admin Passcode</label>
+    <input type="password" id="admin-pass" placeholder="Enter admin passcode" autocomplete="off">
+  </div>
+  <button class="btn btn-primary" onclick="adminLogin()">Enter Admin Console</button>
+  <p class="hint">Default passcode is <strong>teach123</strong> — change it any time from Settings once inside.</p>
+  <p class="hint" style="cursor:pointer;text-decoration:underline;" onclick="switchGateTab('student')">Back to login</p>
+</div>
+```
+
+  </div>
+</div>
+
+<!-- ============ APP (hidden until login) ============ -->
+
+<div id="app" class="hidden">
+
+  <!-- ---- Topbar ---- -->
+
+  <div class="topbar">
+    <div class="brand-mini">
+      <div class="brand-mark">WCU</div>
+      <span>Webster Credit Union</span>
+    </div>
+    <div class="topbar-right">
+      <span class="icon-btn hidden" id="settings-icon-btn" onclick="openSettings()" title="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      </span>
+      <span class="logout-link" onclick="logout()">Sign out</span>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+```
+<!-- ================= STUDENT VIEW ================= -->
+<div id="student-view" class="hidden">
+
+  <!-- Dashboard -->
+  <div id="student-dashboard">
+    <div class="hero">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+        <img id="stu-avatar" class="hidden" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.3);">
+      </div>
+      <div class="hero-label">Available Balance</div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="hero-balance mono" id="stu-balance">$0.00</div>
+        <span class="icon-btn" onclick="toggleBalanceVisibility()" title="Show/hide balance" style="color:var(--paper); opacity:0.85;">
+          <svg id="balance-eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        </span>
+      </div>
+      <div class="hero-sub" id="stu-name">—</div>
+      <div class="hero-acct">Checking · <span id="stu-acct-display">—</span></div>
+    </div>
+
+    <div class="actions">
+      <button class="action-btn" onclick="openModal('transfer')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 16V4M7 4L3 8M7 4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+        Transfer
+      </button>
+      <button class="action-btn" onclick="openModal('deposit')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
+        Deposit
+      </button>
+      <button class="action-btn" onclick="openModal('withdraw')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V8m0 0l-4 4m4-4l4 4M4 4h16"/></svg>
+        Withdraw
+      </button>
+      <button class="action-btn" onclick="openModal('pay')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>
+        Pay Bills
+      </button>
+    </div>
+
+    <div id="dashboard-banner-wrap"></div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Transactions</div>
+        <span class="logout-link" style="color:var(--vault); opacity:0.7;" onclick="openHistoryModal()">History</span>
+      </div>
+      <div id="stu-tx-list"></div>
+    </div>
+  </div>
+
+  <!-- Settings -->
+  <div id="student-settings" class="hidden">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+      <span class="icon-btn" style="color:var(--ink);" onclick="closeSettings()" title="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:22px;height:22px;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </span>
+      <h2 style="font-size:22px;">Account Settings</h2>
+    </div>
+
+    <div style="display:flex; justify-content:center; margin-bottom:20px;">
+      <div id="settings-profile-pic-circle" style="width:84px; height:84px; border-radius:50%; background:#e9e4d6; border:2px solid var(--line); display:flex; align-items:center; justify-content:center; overflow:hidden;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.6" style="width:36px;height:36px;"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
+      </div>
+    </div>
+
+    <div class="section-label">Personal Information</div>
+    <div class="panel">
+      <div class="panel-body" id="settings-personal-info"></div>
+    </div>
+
+    <div class="section-label">Account Numbers</div>
+    <div class="panel">
+      <div class="panel-body" id="settings-account-numbers"></div>
+    </div>
+
+    <div class="section-label">Debit Card</div>
+    <div class="panel">
+      <div class="panel-body" id="settings-debit-card"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= ADMIN VIEW ================= -->
+<div id="admin-view" class="hidden">
+
+  <div class="section-label">Create a student account</div>
+  <div class="panel">
+    <div class="panel-body">
+      <div class="form-row">
+        <div class="field">
+          <label>Student Name</label>
+          <input type="text" id="new-stu-name" placeholder="e.g. Amara Okafor">
+        </div>
+        <div class="field">
+          <label>Starting Balance ($)</label>
+          <input type="number" id="new-stu-balance" placeholder="0.00" min="0" step="0.01">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>Phone Number</label>
+          <input type="text" id="new-stu-phone" placeholder="e.g. (555) 123-4567">
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="new-stu-email" placeholder="e.g. amara@school.edu">
+        </div>
+      </div>
+      <div class="field">
+        <label>Mailing Address</label>
+        <input type="text" id="new-stu-address" placeholder="Street, City, State ZIP">
+      </div>
+      <div class="field" style="max-width:220px;">
+        <label>Debit Card Expiration</label>
+        <input type="text" id="new-stu-cardexp" placeholder="MM/YY" maxlength="5">
+      </div>
+      <div class="field">
+        <label>Profile Picture</label>
+        <div class="check-upload" id="profile-pic-drop" onclick="document.getElementById('new-stu-photo-file').click()" style="padding:12px; display:flex; align-items:center; gap:12px; justify-content:center;">
+          <img id="profile-pic-preview" class="hidden" style="width:44px;height:44px;border-radius:50%;object-fit:cover;">
+          <span id="profile-pic-placeholder">Tap to upload a profile photo (optional)</span>
+        </div>
+        <input type="file" id="new-stu-photo-file" accept="image/*" class="hidden" onchange="handleProfilePhoto(this)">
+      </div>
+      <button class="btn btn-primary" style="width:auto;padding:12px 24px;" onclick="createStudent()">Create account</button>
+      <div id="new-acct-result"></div>
+    </div>
+  </div>
+
+  <div class="section-label">Pending transfer requests</div>
+  <div class="panel" id="pending-transfers-panel">
+    <div id="pending-transfers-list"></div>
+  </div>
+
+  <div class="section-label">Pending check deposits</div>
+  <div class="panel" id="pending-checks-panel">
+    <div id="pending-checks-list"></div>
+  </div>
+
+  <div class="section-label">Withdrawals in progress</div>
+  <div class="panel" id="withdrawals-panel">
+    <div id="withdrawals-list"></div>
+  </div>
+
+  <div class="section-label">Debit card requests</div>
+  <div class="panel" id="card-requests-panel">
+    <div id="card-requests-list"></div>
+  </div>
+
+  <div class="section-label">All student accounts</div>
+  <div class="panel">
+    <div style="overflow-x:auto;">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Account #</th>
+          <th>PIN</th>
+          <th>Balance</th>
+          <th>Fund / Adjust (date optional)</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="admin-accounts-table"></tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="section-label">App background images</div>
+  <div class="panel">
+    <div class="panel-body">
+      <p class="hint" style="margin-bottom:16px;">Upload a custom background image for the login screen and/or the student dashboard. Leave either one empty to keep the plain color design.</p>
+
+      <label style="display:block; font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); margin-bottom:6px; font-family:'SF Mono','Courier New',monospace;">Login screen background</label>
+      <div class="check-upload" id="login-bg-drop" onclick="document.getElementById('login-bg-file').click()" style="margin-bottom:10px;">
+        <div id="login-bg-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:26px;height:26px;"><rect x="3" y="6" width="18" height="12" rx="1.5"/><path d="M3 10h18M7 14h4"/></svg>
+          <span>Tap to upload a background image for the login screen</span>
+        </div>
+        <img id="login-bg-preview" class="check-preview hidden">
+      </div>
+      <input type="file" id="login-bg-file" accept="image/*" class="hidden" onchange="handleAppBgUpload(this,'login')">
+      <div id="login-bg-clear-wrap" style="text-align:right; margin-bottom:24px;"></div>
+
+      <label style="display:block; font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); margin-bottom:6px; font-family:'SF Mono','Courier New',monospace;">Student dashboard background</label>
+      <div class="check-upload" id="dashboard-bg-drop" onclick="document.getElementById('dashboard-bg-file').click()" style="margin-bottom:10px;">
+        <div id="dashboard-bg-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:26px;height:26px;"><rect x="3" y="6" width="18" height="12" rx="1.5"/><path d="M3 10h18M7 14h4"/></svg>
+          <span>Tap to upload a background image for the student dashboard</span>
+        </div>
+        <img id="dashboard-bg-preview" class="check-preview hidden">
+      </div>
+      <input type="file" id="dashboard-bg-file" accept="image/*" class="hidden" onchange="handleAppBgUpload(this,'dashboard')">
+      <div id="dashboard-bg-clear-wrap" style="text-align:right;"></div>
+    </div>
+  </div>
+
+  <div class="section-label">Dashboard banners (shown to students)</div>
+  <div class="panel">
+    <div class="panel-body">
+      <div class="check-upload" id="banner-drop" onclick="document.getElementById('new-banner-file').click()">
+        <div id="banner-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:26px;height:26px;"><rect x="3" y="6" width="18" height="12" rx="1.5"/><path d="M3 10h18M7 14h4"/></svg>
+          <span>Tap to upload a banner image</span>
+        </div>
+      </div>
+      <input type="file" id="new-banner-file" accept="image/*" class="hidden" onchange="handleBannerUpload(this)">
+      <p class="hint">Uploaded images rotate as a carousel on every student's dashboard.</p>
+      <div id="banner-list" style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;"></div>
+    </div>
+  </div>
+
+  <div class="section-label">Settings</div>
+  <div class="panel">
+    <div class="panel-body">
+      <div class="field" style="max-width:280px;">
+        <label>Admin Passcode</label>
+        <input type="password" id="new-admin-pass" placeholder="New passcode">
+      </div>
+      <button class="btn btn-ghost" style="width:auto;padding:10px 20px;" onclick="changeAdminPass()">Update passcode</button>
+      <div style="height:20px;"></div>
+      <button class="btn btn-danger" style="width:auto;padding:10px 20px;" onclick="resetAllData()">Reset all classroom data</button>
+    </div>
+  </div>
+
+</div>
+```
+
+  </div>
+</div>
+
+<div id="modal-root"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ==========================================================
+   WEBSTER CREDIT UNION — classroom teaching bank
+   All data stored in localStorage under key "webstercu_db"
+   ========================================================== */
+
+const DB_KEY = "webstercu_db";
+
+function loadDB(){
+  let raw = localStorage.getItem(DB_KEY);
+  if(!raw){
+    const initial = {
+      adminPass: "teach123",
+      students: {}, // acctNumber -> {name, pin, balance, tx:[]}
+      pendingTransfers: [], // {id, acct, studentName, bank, accountNumber, routingNumber, accountHolderName, amount, status, ts}
+      pendingChecks: [], // {id, acct, studentName, amount, front, back, status, ts}
+      withdrawals: [], // {id, acct, studentName, method, amount, etaDays, eta, status, ts, ...}
+      cardRequests: [], // {id, acct, studentName, cardName, address, city, state, zip, status, ts}
+      banners: [], // [{id, image}]
+      appBackgrounds: {
+        login: "https://www.image2url.com/r2/default/images/1784644840204-47c19cfc-b97a-497e-a41d-405b94a1d4a1.jpeg",
+        dashboard: "https://www.image2url.com/r2/default/images/1784591486866-ea7b4039-593c-4dd3-b8db-8710100938d2.jpeg"
+      }
+    };
+    localStorage.setItem(DB_KEY, JSON.stringify(initial));
+    return initial;
+  }
+  const parsed = JSON.parse(raw);
+  // Migration: fill in backgrounds for DBs created before this feature existed,
+  // without touching any existing student data.
+  if(!parsed.appBackgrounds || (!parsed.appBackgrounds.login && !parsed.appBackgrounds.dashboard)){
+    parsed.appBackgrounds = {
+      login: "https://www.image2url.com/r2/default/images/1784644840204-47c19cfc-b97a-497e-a41d-405b94a1d4a1.jpeg",
+      dashboard: "https://www.image2url.com/r2/default/images/1784591486866-ea7b4039-593c-4dd3-b8db-8710100938d2.jpeg"
+    };
+    localStorage.setItem(DB_KEY, JSON.stringify(parsed));
+  }
+  return parsed;
+}
+function saveDB(db){
+  localStorage.setItem(DB_KEY, JSON.stringify(db));
+}
+
+let db = loadDB();
+let session = null; // {role:'admin'} or {role:'student', acct:'100234'}
+
+function fmt(n){
+  const sign = n < 0 ? "-" : "";
+  return sign + "$" + Math.abs(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function fmtDate(ts){
+  const d = new Date(ts);
+  return d.toLocaleDateString(undefined,{month:'short', day:'numeric'}) + ", " + d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
+}
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2600);
+}
+function genAcctNumber(){
+  let num;
+  do{
+    num = String(100000 + Math.floor(Math.random()*899999));
+  } while(db.students[num]);
+  return num;
+}
+function genPin(){
+  return String(1000 + Math.floor(Math.random()*8999));
+}
+function genRoutingNumber(){
+  // Fixed fictional routing number for the credit union — real banks use one routing number for all accounts
+  return "091234567";
+}
+function genDebitCardNumber(){
+  let num = "4129";
+  for(let i=0;i<3;i++){
+    num += " " + String(1000 + Math.floor(Math.random()*9000));
+  }
+  return num;
+}
+function genExpiry(){
+  const d = new Date();
+  const month = String(d.getMonth()+1).padStart(2,'0');
+  const year = String((d.getFullYear()+4) % 100).padStart(2,'0');
+  return `${month}/${year}`;
+}
+function genCVV(){
+  return String(100 + Math.floor(Math.random()*900));
+}
+function genOtp(){
+  return String(100000 + Math.floor(Math.random()*900000));
+}
+
+/* ---------------- Gate logic ---------------- */
+function switchGateTab(tab){
+  document.getElementById('tab-student').classList.toggle('hidden', tab!=='student');
+  document.getElementById('tab-admin').classList.toggle('hidden', tab!=='admin');
+  document.getElementById('gate-err').classList.add('hidden');
+}
+
+/* Secret admin entry: click the WCU logo/brand 5 times in a row (within 2s each)
+   to reveal the admin passcode field. Nothing on screen hints this exists. */
+let secretClicks = 0;
+let secretTimer = null;
+document.getElementById('brand-trigger').addEventListener('click', ()=>{
+  secretClicks++;
+  clearTimeout(secretTimer);
+  secretTimer = setTimeout(()=>{ secretClicks = 0; }, 2000);
+  if(secretClicks >= 5){
+    secretClicks = 0;
+    switchGateTab('admin');
+  }
+});
+function gateError(msg){
+  const e = document.getElementById('gate-err');
+  e.textContent = msg;
+  e.classList.remove('hidden');
+}
+
+function studentLogin(){
+  const acct = document.getElementById('stu-acct').value.trim();
+  const pin = document.getElementById('stu-pin').value.trim();
+  const s = db.students[acct];
+  if(!s || s.pin !== pin){
+    gateError("We couldn't match that account number and PIN.");
+    return;
+  }
+  session = {role:'student', acct};
+  enterApp();
+}
+
+function adminLogin(){
+  const pass = document.getElementById('admin-pass').value;
+  if(pass !== db.adminPass){
+    gateError("That passcode isn't right.");
+    return;
+  }
+  session = {role:'admin'};
+  enterApp();
+}
+
+function logout(){
+  session = null;
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('gate').classList.remove('hidden');
+  document.getElementById('stu-acct').value = '';
+  document.getElementById('stu-pin').value = '';
+  document.getElementById('admin-pass').value = '';
+  document.getElementById('gate-err').classList.add('hidden');
+}
+
+function enterApp(){
+  document.getElementById('gate').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('student-view').classList.add('hidden');
+  document.getElementById('admin-view').classList.add('hidden');
+
+  if(session.role === 'student'){
+    document.getElementById('student-view').classList.remove('hidden');
+    document.getElementById('settings-icon-btn').classList.remove('hidden');
+    document.getElementById('student-dashboard').classList.remove('hidden');
+    document.getElementById('student-settings').classList.add('hidden');
+    renderStudentView();
+  } else {
+    document.getElementById('admin-view').classList.remove('hidden');
+    document.getElementById('settings-icon-btn').classList.add('hidden');
+    renderAdminView();
+  }
+}
+
+/* ---------------- Student view ---------------- */
+let balanceHidden = false;
+
+function toggleBalanceVisibility(){
+  balanceHidden = !balanceHidden;
+  const icon = document.getElementById('balance-eye-icon');
+  if(balanceHidden){
+    icon.innerHTML = `<path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-7-11-7a20.3 20.3 0 015.06-6.06M9.9 4.24A10.94 10.94 0 0112 4c7 0 11 7 11 7a20.28 20.28 0 01-2.16 3.19M14.12 14.12a3 3 0 11-4.24-4.24"/><path d="M1 1l22 22"/>`;
+  } else {
+    icon.innerHTML = `<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/>`;
+  }
+  renderStudentView();
+}
+
+function renderStudentView(){
+  const s = db.students[session.acct];
+  document.getElementById('stu-balance').textContent = balanceHidden ? '••••••' : fmt(s.balance);
+  document.getElementById('stu-name').textContent = s.name;
+  document.getElementById('stu-acct-display').textContent = 'x' + session.acct.slice(-4);
+
+  const avatar = document.getElementById('stu-avatar');
+  if(s.photo){
+    avatar.src = s.photo;
+    avatar.classList.remove('hidden');
+  } else {
+    avatar.classList.add('hidden');
+  }
+
+  renderDashboardBanners();
+
+  const list = document.getElementById('stu-tx-list');
+  if(!s.tx.length){
+    list.innerHTML = `<div class="empty-state">No transactions yet. Try a deposit or transfer.</div>`;
+    return;
+  }
+  list.innerHTML = renderTxRowsHtml(s.tx.slice().sort((a,b)=>b.ts-a.ts));
+}
+
+function renderTxRowsHtml(sorted){
+  return sorted.map(t=>{
+    const positive = t.amount > 0;
+    const isZero = t.amount === 0;
+    let statusBadge = '';
+    if(t.pendingId){
+      const req = (db.pendingTransfers||[]).find(r=>r.id===t.pendingId);
+      if(req && req.status === 'pending') statusBadge = `<span class="badge badge-pending" style="margin-left:8px;">Pending</span>`;
+    }
+    if(t.pendingCheckId){
+      const chk = (db.pendingChecks||[]).find(c=>c.id===t.pendingCheckId);
+      if(chk && chk.status === 'pending') statusBadge = `<span class="badge badge-pending" style="margin-left:8px;">Pending</span>`;
+    }
+    let subLine = '';
+    if(t.withdrawalId){
+      const wd = (db.withdrawals||[]).find(w=>w.id===t.withdrawalId);
+      if(wd){
+        if(wd.status === 'awaiting_verification'){
+          statusBadge = `<span class="badge badge-pending" style="margin-left:8px;">ID Review</span>`;
+          subLine = `<div class="tx-date">Waiting on ID verification before funds are sent</div>`;
+        } else if(wd.status === 'processing'){
+          statusBadge = `<span class="badge badge-pending" style="margin-left:8px;">Processing</span>`;
+          subLine = `<div class="tx-date">Expected by ${fmtDate(wd.eta)}</div>`;
+        } else if(wd.status === 'denied'){
+          statusBadge = `<span class="badge badge-denied" style="margin-left:8px;">Denied</span>`;
+        } else {
+          statusBadge = `<span class="badge badge-mint" style="margin-left:8px;">Completed</span>`;
+        }
+      }
+    }
+    return `
+      <div class="tx-row">
+        <div class="tx-left">
+          <div class="tx-icon ${positive?'in':'out'}">${positive?'↓': isZero ? '·' : '↑'}</div>
+          <div class="tx-meta">
+            <div class="tx-name">${t.label}${statusBadge}</div>
+            <div class="tx-date">${fmtDate(t.ts)}</div>
+            ${subLine}
+          </div>
+        </div>
+        <div class="tx-amt ${positive?'pos':'neg'}">${isZero ? '—' : (positive?'+':'') + fmt(t.amount)}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openHistoryModal(){
+  const s = db.students[session.acct];
+  const root = document.getElementById('modal-root');
+  const sorted = s.tx.slice().sort((a,b)=>b.ts-a.ts);
+  const rowsHtml = sorted.length ? renderTxRowsHtml(sorted) : `<div class="empty-state">No transactions yet.</div>`;
+  root.innerHTML = `
+    <div class="modal-overlay" onclick="if(event.target===this) closeModal()">
+      <div class="modal" style="max-width:520px; max-height:80vh; overflow-y:auto; text-align:left;">
+        <h3 style="margin-bottom:16px;">Full transaction history</h3>
+        <div style="border:1px solid var(--line); border-radius:8px; overflow:hidden;">
+          ${rowsHtml}
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" onclick="closeModal()" style="flex:none; width:100%;">Close</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function recordTx(acct, label, amount, customTs){
+  const s = db.students[acct];
+  s.balance = Math.round((s.balance + amount)*100)/100;
+  s.tx.push({label, amount, ts: customTs || Date.now()});
+}
+
+/* ---------------- Student Settings (personal info, account numbers, debit card) ---------------- */
+function openSettings(){
+  document.getElementById('student-dashboard').classList.add('hidden');
+  document.getElementById('student-settings').classList.remove('hidden');
+  renderSettings();
+}
+
+function closeSettings(){
+  document.getElementById('student-settings').classList.add('hidden');
+  document.getElementById('student-dashboard').classList.remove('hidden');
+}
+
+function renderSettings(){
+  const s = db.students[session.acct];
+
+  const picCircle = document.getElementById('settings-profile-pic-circle');
+  if(s.photo){
+    picCircle.innerHTML = `<img src="${s.photo}" style="width:100%; height:100%; object-fit:cover;">`;
+  } else {
+    picCircle.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.6" style="width:36px;height:36px;"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>`;
+  }
+
+  document.getElementById('settings-personal-info').innerHTML = `
+    <div class="info-row"><span class="info-label">Full Name</span><span class="info-value">${s.name}</span></div>
+    <div class="info-row"><span class="info-label">Phone</span><span class="info-value">${s.phone || '—'}</span></div>
+    <div class="info-row"><span class="info-label">Email</span><span class="info-value">${s.email || '—'}</span></div>
+    <div class="info-row"><span class="info-label">Mailing Address</span><span class="info-value">${s.address || '—'}</span></div>
+  `;
+
+  document.getElementById('settings-account-numbers').innerHTML = `
+    <div class="info-row"><span class="info-label">Account Number</span><span class="info-value mono">${session.acct}</span></div>
+    <div class="info-row"><span class="info-label">Routing Number</span><span class="info-value mono">${s.routingNumber || '—'}</span></div>
+    <div class="info-row"><span class="info-label">Account Type</span><span class="info-value">Checking</span></div>
+  `;
+
+  renderDebitCardSection();
+}
+
+function renderDebitCardSection(){
+  const s = db.students[session.acct];
+  const wrap = document.getElementById('settings-debit-card');
+
+  if(!s.debitCard){
+    wrap.innerHTML = `
+      <div class="empty-state">No debit card on file for this account.</div>
+      <div style="text-align:center; padding-bottom:6px;">
+        <button class="btn btn-mint" style="width:auto; padding:12px 24px;" onclick="openModal('requestCard')">Request a debit card</button>
+      </div>
+    `;
+    return;
+  }
+
+  const locked = !!s.debitCard.locked;
+
+  wrap.innerHTML = `
+    <div class="debit-card" style="${locked ? 'filter:grayscale(0.7); opacity:0.75;' : ''}">
+      ${locked ? `<div class="card-locked-badge">🔒 Locked</div>` : ''}
+      <div class="debit-card-brand">Webster Credit Union · Debit</div>
+      <div class="debit-card-number">${s.debitCard.number}</div>
+      <div class="debit-card-bottom">
+        <div>Card Holder<div class="val">${s.name.toUpperCase()}</div></div>
+        <div>Expires<div class="val">${s.debitCard.exp}</div></div>
+        <div>CVV<div class="val">${s.debitCard.cvv}</div></div>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:16px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+      <button class="btn ${locked ? 'btn-mint' : 'btn-danger'}" style="width:auto; padding:10px 20px;" onclick="toggleCardLock()">${locked ? 'Unlock card' : 'Lock card'}</button>
+      <button class="btn btn-ghost" style="width:auto; padding:10px 20px;" onclick="openModal('requestCard')">Request a new card</button>
+    </div>
+    <p class="hint" style="text-align:center; margin-top:12px;">${locked ? "Your card is locked. New purchases and withdrawals with this card won't go through until you unlock it." : "Lock your card any time to temporarily block new transactions."}</p>
+    ${renderCardRequestStatus(s)}
+  `;
+}
+
+function toggleCardLock(){
+  const s = db.students[session.acct];
+  s.debitCard.locked = !s.debitCard.locked;
+  saveDB(db);
+  renderDebitCardSection();
+  showToast(s.debitCard.locked ? "Card locked." : "Card unlocked.");
+}
+
+function renderCardRequestStatus(s){
+  const reqs = (db.cardRequests || []).filter(r=>r.acct===session.acct).sort((a,b)=>b.ts-a.ts);
+  if(!reqs.length) return '';
+  const latest = reqs[0];
+  if(latest.status !== 'pending') return '';
+  return `
+    <div class="hint" style="text-align:center; margin-top:14px;">
+      A new card request is on its way to <strong>${latest.address}, ${latest.city}, ${latest.state} ${latest.zip}</strong> — pending mailing.
+    </div>
+  `;
+}
+
+
+/* ---------------- External bank transfer requests (pending admin approval) ---------------- */
+const BANKS = [
+  "Chase Bank", "Bank of America", "Wells Fargo", "Citibank",
+  "Capital One", "PNC Bank", "US Bank", "Truist", "TD Bank",
+  "Regions Bank", "Fifth Third Bank", "Ally Bank", "Other"
+];
+
+/* ---------------- Bill Pay: common US payee categories ---------------- */
+const BILL_CATEGORIES = {
+  "Electricity & Gas": ["Duke Energy", "PG&E", "Con Edison", "National Grid", "Georgia Power", "Xcel Energy", "Other utility"],
+  "Water & Sewer": ["City Water Utility", "County Water Authority", "Other water utility"],
+  "Rent / Mortgage": ["Landlord / Property Manager", "Mortgage Lender", "Other housing payment"],
+  "Phone & Internet": ["Verizon", "AT&T", "T-Mobile", "Comcast Xfinity", "Spectrum", "Other carrier"],
+  "Credit Card": ["Chase Card Services", "American Express", "Capital One", "Discover", "Citi Card", "Other card issuer"],
+  "Auto Loan": ["Toyota Financial", "Ford Credit", "Ally Auto", "Capital One Auto", "Other lender"],
+  "Student Loan": ["Federal Student Aid", "Sallie Mae", "Navient", "Other loan servicer"],
+  "Insurance": ["State Farm", "Geico", "Progressive", "Allstate", "Blue Cross Blue Shield", "Other insurer"],
+  "Subscriptions": ["Netflix", "Spotify", "Amazon Prime", "Disney+", "Gym Membership", "Other subscription"],
+  "Tuition & School Fees": ["School District", "College / University", "Other school fee"],
+  "Medical Bill": ["Hospital / Clinic", "Dentist", "Other medical provider"],
+  "Person (classmate)": [] // handled separately — populated with student roster
+};
+
+function genRequestId(){
+  return 'req_' + Date.now() + '_' + Math.floor(Math.random()*10000);
+}
+
+/* ---------------- Mobile check deposit (pending admin verification) ---------------- */
+let checkImages = {front:null, back:null};
+let idImage = null;
+
+function handleIdImage(input){
+  const file = input.files && input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    idImage = e.target.result;
+    const preview = document.getElementById('id-preview');
+    const placeholder = document.getElementById('id-placeholder');
+    preview.src = e.target.result;
+    preview.classList.remove('hidden');
+    placeholder.classList.add('hidden');
+  };
+  reader.readAsDataURL(file);
+}
+let newStudentPhoto = null;
+
+function handleProfilePhoto(input){
+  const file = input.files && input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    newStudentPhoto = e.target.result;
+    const preview = document.getElementById('profile-pic-preview');
+    const placeholder = document.getElementById('profile-pic-placeholder');
+    preview.src = e.target.result;
+    preview.classList.remove('hidden');
+    placeholder.classList.add('hidden');
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ---------------- App background images (login screen + student dashboard) ---------------- */
+function handleAppBgUpload(input, which){
+  const file = input.files && input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    if(!db.appBackgrounds) db.appBackgrounds = {login:null, dashboard:null};
+    db.appBackgrounds[which] = e.target.result;
+    saveDB(db);
+    input.value = '';
+    renderAppBgAdminPreviews();
+    applyAppBackgrounds();
+    showToast(`${which === 'login' ? 'Login' : 'Dashboard'} background updated.`);
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearAppBg(which){
+  if(!db.appBackgrounds) db.appBackgrounds = {login:null, dashboard:null};
+  db.appBackgrounds[which] = null;
+  saveDB(db);
+  renderAppBgAdminPreviews();
+  applyAppBackgrounds();
+  showToast(`${which === 'login' ? 'Login' : 'Dashboard'} background removed.`);
+}
+
+function renderAppBgAdminPreviews(){
+  const bg = (db.appBackgrounds) || {login:null, dashboard:null};
+
+  ['login','dashboard'].forEach(which=>{
+    const preview = document.getElementById(`${which}-bg-preview`);
+    const placeholder = document.getElementById(`${which}-bg-placeholder`);
+    const clearWrap = document.getElementById(`${which}-bg-clear-wrap`);
+    if(!preview) return; // admin view not rendered yet
+    if(bg[which]){
+      preview.src = bg[which];
+      preview.classList.remove('hidden');
+      placeholder.classList.add('hidden');
+      clearWrap.innerHTML = `<button class="btn btn-ghost btn-sm" onclick="clearAppBg('${which}')">Remove image</button>`;
+    } else {
+      preview.classList.add('hidden');
+      preview.src = '';
+      placeholder.classList.remove('hidden');
+      clearWrap.innerHTML = '';
+    }
+  });
+}
+
+function applyAppBackgrounds(){
+  const bg = (db.appBackgrounds) || {login:null, dashboard:null};
+  const gate = document.getElementById('gate');
+  const app = document.getElementById('app');
+  if(gate){
+    gate.style.backgroundImage = bg.login
+      ? `url('${bg.login}'), radial-gradient(circle at 20% 15%, rgba(47,174,122,0.15), transparent 45%), radial-gradient(circle at 80% 85%, rgba(200,162,74,0.12), transparent 40%)`
+      : '';
+    gate.style.backgroundSize = bg.login ? 'cover, auto, auto' : '';
+    gate.style.backgroundPosition = bg.login ? 'center, initial, initial' : '';
+    gate.style.backgroundRepeat = bg.login ? 'no-repeat, initial, initial' : '';
+  }
+  if(app){
+    app.style.backgroundImage = bg.dashboard ? `url('${bg.dashboard}')` : '';
+  }
+}
+
+/* ---------------- Dashboard banner carousel (admin uploads, students view) ---------------- */
+function handleBannerUpload(input){
+  const file = input.files && input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    if(!db.banners) db.banners = [];
+    db.banners.push({id: 'bn_' + Date.now() + '_' + Math.floor(Math.random()*10000), image: e.target.result});
+    saveDB(db);
+    input.value = '';
+    renderBannerAdminList();
+    showToast("Banner added.");
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeBanner(id){
+  db.banners = (db.banners || []).filter(b=>b.id !== id);
+  saveDB(db);
+  renderBannerAdminList();
+}
+
+function renderBannerAdminList(){
+  const list = document.getElementById('banner-list');
+  if(!list) return;
+  const banners = db.banners || [];
+  if(!banners.length){
+    list.innerHTML = `<div class="hint">No banners uploaded yet.</div>`;
+    return;
+  }
+  list.innerHTML = banners.map(b=>`
+    <div class="banner-thumb-wrap">
+      <img src="${b.image}" class="banner-thumb">
+      <button class="banner-thumb-remove" onclick="removeBanner('${b.id}')" title="Remove">×</button>
+    </div>
+  `).join('');
+}
+
+let bannerRotateTimer = null;
+let bannerIndex = 0;
+
+function renderDashboardBanners(){
+  const wrap = document.getElementById('dashboard-banner-wrap');
+  if(!wrap) return;
+  const banners = db.banners || [];
+  clearInterval(bannerRotateTimer);
+
+  if(!banners.length){
+    wrap.innerHTML = '';
+    return;
+  }
+
+  bannerIndex = 0;
+  wrap.innerHTML = `
+    <div class="banner-carousel">
+      ${banners.map((b,i)=>`<div class="banner-slide ${i===0?'active':''}" data-idx="${i}"><img src="${b.image}"></div>`).join('')}
+      ${banners.length > 1 ? `<div class="banner-dots">${banners.map((b,i)=>`<div class="banner-dot ${i===0?'active':''}" data-dot="${i}"></div>`).join('')}</div>` : ''}
+    </div>
+  `;
+
+  if(banners.length > 1){
+    bannerRotateTimer = setInterval(()=>{
+      const liveWrap = document.getElementById('dashboard-banner-wrap');
+      if(!liveWrap){ clearInterval(bannerRotateTimer); return; }
+      const slides = liveWrap.querySelectorAll('.banner-slide');
+      const dots = liveWrap.querySelectorAll('.banner-dot');
+      if(!slides.length){ clearInterval(bannerRotateTimer); return; }
+      if(bannerIndex >= slides.length) bannerIndex = 0;
+      slides[bannerIndex].classList.remove('active');
+      if(dots[bannerIndex]) dots[bannerIndex].classList.remove('active');
+      bannerIndex = (bannerIndex + 1) % slides.length;
+      if(slides[bannerIndex]) slides[bannerIndex].classList.add('active');
+      if(dots[bannerIndex]) dots[bannerIndex].classList.add('active');
+    }, 4000);
+  }
+}
+
+function handleCheckImage(input, side){
+  const file = input.files && input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    checkImages[side] = e.target.result;
+    const preview = document.getElementById(`${side}-preview`);
+    const placeholder = document.getElementById(`${side}-placeholder`);
+    preview.src = e.target.result;
+    preview.classList.remove('hidden');
+    placeholder.classList.add('hidden');
+  };
+  reader.readAsDataURL(file);
+}
+
+function genCheckId(){
+  return 'chk_' + Date.now() + '_' + Math.floor(Math.random()*10000);
+}
+
+function submitCheckDeposit(acct, data){
+  if(!db.pendingChecks) db.pendingChecks = [];
+  const s = db.students[acct];
+  const chk = {
+    id: genCheckId(),
+    acct,
+    studentName: s.name,
+    amount: data.amount,
+    front: data.front,
+    back: data.back,
+    status: 'pending', // pending | approved | denied
+    ts: Date.now()
+  };
+  db.pendingChecks.push(chk);
+  s.tx.push({
+    label: `Check deposit — pending verification`,
+    amount: 0,
+    ts: Date.now(),
+    pendingCheckId: chk.id
+  });
+  saveDB(db);
+}
+
+function approveCheck(checkId){
+  const chk = db.pendingChecks.find(c=>c.id===checkId);
+  if(!chk || chk.status !== 'pending') return;
+  const s = db.students[chk.acct];
+  chk.status = 'approved';
+  s.balance = Math.round((s.balance + chk.amount)*100)/100;
+  s.tx.push({
+    label: `Check deposit — approved`,
+    amount: chk.amount,
+    ts: Date.now()
+  });
+  saveDB(db);
+  renderAdminView();
+  showToast("Check approved and funds added.");
+}
+
+function denyCheck(checkId){
+  const chk = db.pendingChecks.find(c=>c.id===checkId);
+  if(!chk || chk.status !== 'pending') return;
+  chk.status = 'denied';
+  const s = db.students[chk.acct];
+  s.tx.push({
+    label: `Check deposit — not approved`,
+    amount: 0,
+    ts: Date.now()
+  });
+  saveDB(db);
+  renderAdminView();
+  showToast("Check denied.");
+}
+
+function genWithdrawalId(){
+  return 'wd_' + Date.now() + '_' + Math.floor(Math.random()*10000);
+}
+
+function businessDaysFromNow(days){
+  let d = new Date();
+  let added = 0;
+  while(added < days){
+    d.setDate(d.getDate()+1);
+    const day = d.getDay();
+    if(day !== 0 && day !== 6) added++;
+  }
+  return d;
+}
+
+function submitWithdrawal(acct, data){
+  if(!db.withdrawals) db.withdrawals = [];
+  const s = db.students[acct];
+  const wd = {
+    id: genWithdrawalId(),
+    acct,
+    studentName: s.name,
+    method: data.method, // 'ach' | 'check'
+    amount: data.amount,
+    etaDays: data.etaDays,
+    eta: null, // set once approved
+    status: 'awaiting_verification', // awaiting_verification | processing | completed | denied
+    idImage: data.idImage,
+    ts: Date.now(),
+    // ach fields
+    bank: data.bank, accountNumber: data.accountNumber, routingNumber: data.routingNumber, accountHolderName: data.accountHolderName,
+    // check fields
+    checkName: data.checkName, address: data.address, city: data.city, state: data.state, zip: data.zip
+  };
+  db.withdrawals.push(wd);
+
+  // Funds stay put until the ID is reviewed and the payout is approved
+  const methodLabel = data.method === 'ach' ? `ACH to ${data.bank}` : `Check mailed to ${data.city}, ${data.state}`;
+  s.tx.push({
+    label: `Withdrawal — ${methodLabel}`,
+    amount: 0,
+    ts: Date.now(),
+    withdrawalId: wd.id
+  });
+  saveDB(db);
+}
+
+function approveWithdrawal(id){
+  const wd = db.withdrawals.find(w=>w.id===id);
+  if(!wd || wd.status !== 'awaiting_verification') return;
+  const s = db.students[wd.acct];
+  if(wd.amount > s.balance){
+    showToast("Can't approve — student no longer has sufficient balance.");
+    return;
+  }
+  const eta = businessDaysFromNow(wd.etaDays);
+  wd.status = 'processing';
+  wd.eta = eta.getTime();
+  s.balance = Math.round((s.balance - wd.amount)*100)/100;
+
+  // Update the placeholder tx line to reflect the real amount leaving now
+  const tx = s.tx.find(t=>t.withdrawalId === wd.id);
+  if(tx) tx.amount = -wd.amount;
+
+  saveDB(db);
+  renderAdminView();
+  showToast("ID verified — withdrawal approved and processing.");
+}
+
+function denyWithdrawal(id){
+  const wd = db.withdrawals.find(w=>w.id===id);
+  if(!wd || wd.status !== 'awaiting_verification') return;
+  wd.status = 'denied';
+  const s = db.students[wd.acct];
+  const tx = s.tx.find(t=>t.withdrawalId === wd.id);
+  if(tx) tx.label = tx.label + ' — ID verification failed';
+  saveDB(db);
+  renderAdminView();
+  showToast("Withdrawal denied.");
+}
+
+function genCardRequestId(){
+  return 'card_' + Date.now() + '_' + Math.floor(Math.random()*10000);
+}
+
+function submitCardRequest(acct, data){
+  if(!db.cardRequests) db.cardRequests = [];
+  const s = db.students[acct];
+  const req = {
+    id: genCardRequestId(),
+    acct,
+    studentName: s.name,
+    cardName: data.cardName,
+    address: data.address,
+    city: data.city,
+    state: data.state,
+    zip: data.zip,
+    status: 'pending', // pending | mailed
+    ts: Date.now()
+  };
+  db.cardRequests.push(req);
+  saveDB(db);
+}
+
+function fulfillCardRequest(reqId){
+  const req = db.cardRequests.find(r=>r.id===reqId);
+  if(!req || req.status !== 'pending') return;
+  const s = db.students[req.acct];
+  const entered = prompt("Enter the card's expiration date (MM/YY):", genExpiry());
+  if(entered === null) return; // admin cancelled
+  const exp = entered.trim() || genExpiry();
+  req.status = 'mailed';
+  s.debitCard = {
+    number: genDebitCardNumber(),
+    exp,
+    cvv: genCVV(),
+    locked: false
+  };
+  saveDB(db);
+  renderAdminView();
+  showToast("Card marked as mailed and issued to the account.");
+}
+
+function submitTransferRequest(acct, data){
+  if(!db.pendingTransfers) db.pendingTransfers = [];
+  const s = db.students[acct];
+  const req = {
+    id: genRequestId(),
+    acct,
+    studentName: s.name,
+    bank: data.bank,
+    accountNumber: data.accountNumber,
+    routingNumber: data.routingNumber,
+    accountHolderName: data.accountHolderName,
+    amount: data.amount,
+    status: 'pending', // pending | approved | denied
+    ts: Date.now()
+  };
+  db.pendingTransfers.push(req);
+  // Add a placeholder tx line marked pending so it shows in history immediately
+  s.tx.push({
+    label: `Transfer to ${data.bank} — pending verification`,
+    amount: 0,
+    ts: Date.now(),
+    pendingId: req.id
+  });
+  saveDB(db);
+}
+
+function approveTransfer(reqId){
+  const req = db.pendingTransfers.find(r=>r.id===reqId);
+  if(!req || req.status !== 'pending') return;
+  const s = db.students[req.acct];
+  if(req.amount > s.balance){
+    showToast("Can't approve — student no longer has sufficient balance.");
+    return;
+  }
+  req.status = 'approved';
+  s.balance = Math.round((s.balance - req.amount)*100)/100;
+  s.tx.push({
+    label: `Transfer to ${req.bank} — approved`,
+    amount: -req.amount,
+    ts: Date.now()
+  });
+  saveDB(db);
+  renderAdminView();
+  showToast("Transfer approved and sent.");
+}
+
+function denyTransfer(reqId){
+  const req = db.pendingTransfers.find(r=>r.id===reqId);
+  if(!req || req.status !== 'pending') return;
+  req.status = 'denied';
+  const s = db.students[req.acct];
+  s.tx.push({
+    label: `Transfer to ${req.bank} — not approved`,
+    amount: 0,
+    ts: Date.now()
+  });
+  saveDB(db);
+  renderAdminView();
+  showToast("Transfer denied.");
+}
+
+/* ---------------- Modals: deposit / withdraw / transfer / pay ---------------- */
+function openModal(type){
+  const root = document.getElementById('modal-root');
+  const s = db.students[session.acct];
+
+  let title, bodyHtml, onSubmit;
+
+  if(type === 'deposit'){
+    title = "Deposit a check";
+    bodyHtml = `
+      <div class="field"><label>Check Amount</label><input type="number" id="m-amount" min="0.01" step="0.01" placeholder="0.00"></div>
+
+      <div class="field">
+        <label>Front of check</label>
+        <div class="check-upload" id="front-drop" onclick="document.getElementById('m-front-file').click()">
+          <div id="front-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:26px;height:26px;"><rect x="3" y="6" width="18" height="12" rx="1.5"/><path d="M3 10h18M7 14h4"/></svg>
+            <span>Tap to upload<br>the front of your check</span>
+          </div>
+          <img id="front-preview" class="check-preview hidden">
+        </div>
+        <input type="file" id="m-front-file" accept="image/*" class="hidden" onchange="handleCheckImage(this,'front')">
+      </div>
+
+      <div class="field">
+        <label>Back of check (signed)</label>
+        <div class="check-upload" id="back-drop" onclick="document.getElementById('m-back-file').click()">
+          <div id="back-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:26px;height:26px;"><rect x="3" y="6" width="18" height="12" rx="1.5"/><path d="M3 10h18M7 14h4"/></svg>
+            <span>Tap to upload<br>the back of your check</span>
+          </div>
+          <img id="back-preview" class="check-preview hidden">
+        </div>
+        <input type="file" id="m-back-file" accept="image/*" class="hidden" onchange="handleCheckImage(this,'back')">
+      </div>
+
+      <p class="hint">Your check will be held for verification before the funds are added to your balance.</p>
+    `;
+    onSubmit = ()=>{
+      const amt = parseFloat(document.getElementById('m-amount').value);
+      if(!(amt > 0)) return showToast("Enter a valid check amount.");
+      if(!checkImages.front) return showToast("Upload a photo of the front of the check.");
+      if(!checkImages.back) return showToast("Upload a photo of the back of the check.");
+
+      submitCheckDeposit(session.acct, {
+        amount: amt,
+        front: checkImages.front,
+        back: checkImages.back
+      });
+      checkImages = {front:null, back:null};
+      closeModal();
+      renderStudentView();
+      showCheckPendingModal();
+    };
+  }
+
+  if(type === 'withdraw'){
+    title = "Withdraw funds";
+    bodyHtml = `
+      <div class="field">
+        <label>How would you like to withdraw?</label>
+        <select id="m-method" onchange="onWithdrawMethodChange()">
+          <option value="">Choose a method...</option>
+          <option value="ach">Direct deposit to my bank (ACH) — 3 business days</option>
+          <option value="check">Mail me a check — 7 business days</option>
+        </select>
+      </div>
+
+      <div id="m-ach-fields" class="hidden">
+        <div class="field">
+          <label>Bank Name</label>
+          <select id="m-bank">
+            <option value="">Choose a bank...</option>
+            ${BANKS.map(b=>`<option value="${b}">${b}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field"><label>Account Number</label><input type="text" id="m-acctnum" placeholder="e.g. 000123456789" autocomplete="off"></div>
+        <div class="field"><label>Routing Number</label><input type="text" id="m-routing" placeholder="9-digit routing number" autocomplete="off" maxlength="9"></div>
+        <div class="field"><label>Name on Account</label><input type="text" id="m-holder" placeholder="Full name on the bank account"></div>
+      </div>
+
+      <div id="m-check-fields" class="hidden">
+        <div class="field"><label>Name on Check</label><input type="text" id="m-check-name" placeholder="Full name"></div>
+        <div class="field"><label>Mailing Address</label><input type="text" id="m-address" placeholder="Street address"></div>
+        <div class="form-row">
+          <div class="field"><label>City</label><input type="text" id="m-city" placeholder="City"></div>
+          <div class="field"><label>State</label><input type="text" id="m-state" placeholder="State" maxlength="2"></div>
+        </div>
+        <div class="field" style="max-width:160px;"><label>ZIP Code</label><input type="text" id="m-zip" placeholder="ZIP" maxlength="10"></div>
+      </div>
+
+      <div class="field"><label>Amount</label><input type="number" id="m-amount" min="0.01" step="0.01" placeholder="0.00"></div>
+      <p class="hint">Available: ${fmt(s.balance)}</p>
+
+      <div class="field">
+        <label>Upload a photo ID</label>
+        <div class="check-upload" id="id-drop" onclick="document.getElementById('m-id-file').click()">
+          <div id="id-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:26px;height:26px;"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="12" r="2.2"/><path d="M14 10h4M14 14h4"/></svg>
+            <span>Tap to upload a photo of your ID</span>
+          </div>
+          <img id="id-preview" class="check-preview hidden">
+        </div>
+        <input type="file" id="m-id-file" accept="image/*" class="hidden" onchange="handleIdImage(this)">
+        <p class="hint">Payouts require ID verification. Your ID photo is reviewed before funds are released.</p>
+      </div>
+    `;
+    onSubmit = ()=>{
+      const method = document.getElementById('m-method').value;
+      const amt = parseFloat(document.getElementById('m-amount').value);
+
+      if(!method) return showToast("Choose a withdrawal method.");
+      if(!(amt > 0)) return showToast("Enter a valid amount.");
+      if(amt > s.balance) return showToast("Insufficient funds for that withdrawal.");
+      if(!idImage) return showToast("Upload a photo of your ID to continue.");
+
+      if(method === 'ach'){
+        const bank = document.getElementById('m-bank').value;
+        const accountNumber = document.getElementById('m-acctnum').value.trim();
+        const routingNumber = document.getElementById('m-routing').value.trim();
+        const accountHolderName = document.getElementById('m-holder').value.trim();
+        if(!bank) return showToast("Select your bank.");
+        if(!accountNumber) return showToast("Enter your account number.");
+        if(!routingNumber) return showToast("Enter your routing number.");
+        if(!accountHolderName) return showToast("Enter the name on the account.");
+
+        submitWithdrawal(session.acct, {
+          method:'ach', amount: amt, bank, accountNumber, routingNumber, accountHolderName,
+          etaDays: 3, idImage
+        });
+      } else {
+        const checkName = document.getElementById('m-check-name').value.trim();
+        const address = document.getElementById('m-address').value.trim();
+        const city = document.getElementById('m-city').value.trim();
+        const state = document.getElementById('m-state').value.trim();
+        const zip = document.getElementById('m-zip').value.trim();
+        if(!checkName) return showToast("Enter the name for the check.");
+        if(!address) return showToast("Enter a mailing address.");
+        if(!city) return showToast("Enter a city.");
+        if(!state) return showToast("Enter a state.");
+        if(!zip) return showToast("Enter a ZIP code.");
+
+        submitWithdrawal(session.acct, {
+          method:'check', amount: amt, checkName, address, city, state, zip,
+          etaDays: 7, idImage
+        });
+      }
+
+      closeModal();
+      renderStudentView();
+      showWithdrawSubmittedModal(method);
+    };
+  }
+
+  if(type === 'transfer'){
+    title = "Transfer to bank";
+    bodyHtml = `
+      <div class="field">
+        <label>Select your bank</label>
+        <select id="m-bank">
+          <option value="">Choose a bank...</option>
+          ${BANKS.map(b=>`<option value="${b}">${b}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field"><label>Account Number</label><input type="text" id="m-acctnum" placeholder="e.g. 000123456789" autocomplete="off"></div>
+      <div class="field"><label>Routing Number</label><input type="text" id="m-routing" placeholder="9-digit routing number" autocomplete="off" maxlength="9"></div>
+      <div class="field"><label>Name on Account</label><input type="text" id="m-holder" placeholder="Full name on the bank account"></div>
+      <div class="field"><label>Amount</label><input type="number" id="m-amount" min="0.01" step="0.01" placeholder="0.00"></div>
+      <p class="hint">Available: ${fmt(s.balance)}. Your payment will be under review before funds leave your account.</p>
+    `;
+    onSubmit = ()=>{
+      const bank = document.getElementById('m-bank').value;
+      const accountNumber = document.getElementById('m-acctnum').value.trim();
+      const routingNumber = document.getElementById('m-routing').value.trim();
+      const accountHolderName = document.getElementById('m-holder').value.trim();
+      const amt = parseFloat(document.getElementById('m-amount').value);
+
+      if(!bank) return showToast("Select your bank.");
+      if(!accountNumber) return showToast("Enter your account number.");
+      if(!routingNumber) return showToast("Enter your routing number.");
+      if(!accountHolderName) return showToast("Enter the name on the account.");
+      if(!(amt > 0)) return showToast("Enter a valid amount.");
+      if(amt > s.balance) return showToast("Insufficient funds for that transfer.");
+
+      submitTransferRequest(session.acct, {bank, accountNumber, routingNumber, accountHolderName, amount: amt});
+      closeModal();
+      renderStudentView();
+      showPendingModal();
+    };
+  }
+
+  if(type === 'pay'){
+    const others = Object.entries(db.students).filter(([num])=>num !== session.acct);
+    const categories = Object.keys(BILL_CATEGORIES);
+    title = "Pay bills";
+    bodyHtml = `
+      <div class="field">
+        <label>What are you paying?</label>
+        <select id="m-category" onchange="onPayCategoryChange()">
+          <option value="">Choose a category...</option>
+          ${categories.map(c=>`<option value="${c}">${c}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field hidden" id="m-payee-wrap">
+        <label id="m-payee-label">Payee</label>
+        <select id="m-payee"></select>
+      </div>
+      <div class="field hidden" id="m-payee-other-wrap">
+        <label>Payee name</label>
+        <input type="text" id="m-payee-other" placeholder="Enter the company or person's name">
+      </div>
+      <div class="field hidden" id="m-account-wrap">
+        <label>Account / Reference Number</label>
+        <input type="text" id="m-account" placeholder="Account number on the bill" autocomplete="off">
+      </div>
+      <div class="field"><label>Amount</label><input type="number" id="m-amount" min="0.01" step="0.01" placeholder="0.00"></div>
+      <p class="hint">Available: ${fmt(s.balance)}</p>
+    `;
+    onSubmit = ()=>{
+      const category = document.getElementById('m-category').value;
+      const amt = parseFloat(document.getElementById('m-amount').value);
+
+      if(!category) return showToast("Choose what you're paying.");
+      if(!(amt > 0)) return showToast("Enter a valid amount.");
+      if(amt > s.balance) return showToast("Insufficient funds for that payment.");
+
+      if(category === "Person (classmate)"){
+        const recipient = document.getElementById('m-payee').value;
+        if(!recipient) return showToast("Choose who you're sending money to.");
+        recordTx(session.acct, `Payment to ${db.students[recipient].name}`, -amt);
+        recordTx(recipient, `Payment from ${s.name}`, amt);
+        saveDB(db); closeModal(); renderStudentView(); showToast("Payment sent.");
+        return;
+      }
+
+      const payeeSelect = document.getElementById('m-payee').value;
+      const isOther = payeeSelect === "__other__";
+      const payeeName = isOther ? document.getElementById('m-payee-other').value.trim() : payeeSelect;
+      const acctRef = document.getElementById('m-account').value.trim();
+
+      if(!payeeName) return showToast("Enter or select who you're paying.");
+
+      const label = acctRef ? `${category} — ${payeeName} (Acct ${acctRef})` : `${category} — ${payeeName}`;
+      recordTx(session.acct, label, -amt);
+      saveDB(db); closeModal(); renderStudentView(); showToast("Payment sent.");
+    };
+  }
+
+  if(type === 'requestCard'){
+    title = "Request a debit card";
+    bodyHtml = `
+      <div class="field"><label>Name on Card</label><input type="text" id="m-card-name" placeholder="Full name" value="${s.name}"></div>
+      <div class="field"><label>Mailing Address</label><input type="text" id="m-card-address" placeholder="Street address" value="${s.address || ''}"></div>
+      <div class="form-row">
+        <div class="field"><label>City</label><input type="text" id="m-card-city" placeholder="City"></div>
+        <div class="field"><label>State</label><input type="text" id="m-card-state" placeholder="State" maxlength="2"></div>
+      </div>
+      <div class="field" style="max-width:160px;"><label>ZIP Code</label><input type="text" id="m-card-zip" placeholder="ZIP" maxlength="10"></div>
+      <p class="hint">Your new card will be mailed to this address.</p>
+    `;
+    onSubmit = ()=>{
+      const cardName = document.getElementById('m-card-name').value.trim();
+      const address = document.getElementById('m-card-address').value.trim();
+      const city = document.getElementById('m-card-city').value.trim();
+      const state = document.getElementById('m-card-state').value.trim();
+      const zip = document.getElementById('m-card-zip').value.trim();
+
+      if(!cardName) return showToast("Enter the name for the card.");
+      if(!address) return showToast("Enter a mailing address.");
+      if(!city) return showToast("Enter a city.");
+      if(!state) return showToast("Enter a state.");
+      if(!zip) return showToast("Enter a ZIP code.");
+
+      submitCardRequest(session.acct, {cardName, address, city, state, zip});
+      closeModal();
+      renderSettings();
+      showToast("Card request submitted — it's on its way to be mailed.");
+    };
+  }
+
+  root.innerHTML = `
+    <div class="modal-overlay" onclick="if(event.target===this) closeModal()">
+      <div class="modal">
+        <h3>${title}</h3>
+        ${bodyHtml}
+        <div class="modal-actions">
+          <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+          <button class="btn btn-mint" id="m-submit">Confirm</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('m-submit').onclick = onSubmit;
+}
+function closeModal(){
+  document.getElementById('modal-root').innerHTML = '';
+  checkImages = {front:null, back:null};
+  idImage = null;
+}
+
+function onWithdrawMethodChange(){
+  const method = document.getElementById('m-method').value;
+  document.getElementById('m-ach-fields').classList.toggle('hidden', method !== 'ach');
+  document.getElementById('m-check-fields').classList.toggle('hidden', method !== 'check');
+}
+
+function onPayCategoryChange(){
+  const category = document.getElementById('m-category').value;
+  const payeeWrap = document.getElementById('m-payee-wrap');
+  const payeeOtherWrap = document.getElementById('m-payee-other-wrap');
+  const accountWrap = document.getElementById('m-account-wrap');
+  const payeeLabel = document.getElementById('m-payee-label');
+  const payeeSelect = document.getElementById('m-payee');
+
+  payeeOtherWrap.classList.add('hidden');
+  document.getElementById('m-payee-other').value = '';
+
+  if(!category){
+    payeeWrap.classList.add('hidden');
+    accountWrap.classList.add('hidden');
+    return;
+  }
+
+  if(category === "Person (classmate)"){
+    payeeLabel.textContent = "Recipient";
+    const others = Object.entries(db.students).filter(([num])=>num !== session.acct);
+    payeeSelect.innerHTML = `<option value="">Select a classmate...</option>` +
+      others.map(([num,st])=>`<option value="${num}">${st.name} (x${num.slice(-4)})</option>`).join('');
+    payeeSelect.onchange = null;
+    payeeWrap.classList.remove('hidden');
+    accountWrap.classList.add('hidden');
+    return;
+  }
+
+  payeeLabel.textContent = "Payee";
+  const payees = BILL_CATEGORIES[category] || [];
+  payeeSelect.innerHTML = `<option value="">Select a payee...</option>` +
+    payees.filter(p=>!p.startsWith("Other")).map(p=>`<option value="${p}">${p}</option>`).join('') +
+    `<option value="__other__">Other / not listed</option>`;
+  payeeSelect.onchange = ()=>{
+    payeeOtherWrap.classList.toggle('hidden', payeeSelect.value !== '__other__');
+  };
+  payeeWrap.classList.remove('hidden');
+  accountWrap.classList.remove('hidden');
+}
+
+function showPendingModal(){
+  const root = document.getElementById('modal-root');
+  root.innerHTML = `
+    <div class="modal-overlay" onclick="if(event.target===this) closeModal()">
+      <div class="modal" style="text-align:center;">
+        <div style="width:56px;height:56px;border-radius:50%;background:#e3f5ec;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1e8a5f" stroke-width="2" style="width:28px;height:28px;"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <h3>Transfer submitted</h3>
+        <p class="hint" style="margin-top:10px;">Your payment is under review. We'll notify you once it's been verified and processed.</p>
+        <div class="modal-actions">
+          <button class="btn btn-mint" onclick="closeModal()" style="flex:none; width:100%;">Done</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function showCheckPendingModal(){
+  const root = document.getElementById('modal-root');
+  root.innerHTML = `
+    <div class="modal-overlay" onclick="if(event.target===this) closeModal()">
+      <div class="modal" style="text-align:center;">
+        <div style="width:56px;height:56px;border-radius:50%;background:#e3f5ec;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1e8a5f" stroke-width="2" style="width:28px;height:28px;"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <h3>Check submitted</h3>
+        <p class="hint" style="margin-top:10px;">Your check is being reviewed. Funds will be added to your balance once it's verified.</p>
+        <div class="modal-actions">
+          <button class="btn btn-mint" onclick="closeModal()" style="flex:none; width:100%;">Done</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function showWithdrawSubmittedModal(method){
+  const root = document.getElementById('modal-root');
+  const isAch = method === 'ach';
+  root.innerHTML = `
+    <div class="modal-overlay" onclick="if(event.target===this) closeModal()">
+      <div class="modal" style="text-align:center;">
+        <div style="width:56px;height:56px;border-radius:50%;background:#e3f5ec;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1e8a5f" stroke-width="2" style="width:28px;height:28px;"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <h3>Withdrawal submitted</h3>
+        <p class="hint" style="margin-top:10px;">
+          ${isAch
+            ? "Your funds are on the way to your bank account. ACH transfers typically arrive in 3 business days."
+            : "Your check is being prepared for mailing. Checks typically arrive by mail in 7 business days."}
+        </p>
+        <div class="modal-actions">
+          <button class="btn btn-mint" onclick="closeModal()" style="flex:none; width:100%;">Done</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------------- Admin view ---------------- */
+function renderPendingTransfers(){
+  const list = document.getElementById('pending-transfers-list');
+  const all = (db.pendingTransfers || []).slice().sort((a,b)=>b.ts-a.ts);
+  const pending = all.filter(r=>r.status==='pending');
+  const resolved = all.filter(r=>r.status!=='pending').slice(0,8);
+
+  if(!pending.length && !resolved.length){
+    list.innerHTML = `<div class="empty-state">No transfer requests yet.</div>`;
+    return;
+  }
+
+  let html = '';
+
+  if(pending.length){
+    html += pending.map(r=>`
+      <div class="tx-row" style="align-items:flex-start;">
+        <div class="tx-left" style="align-items:flex-start;">
+          <div class="tx-icon out" style="margin-top:2px;">↑</div>
+          <div class="tx-meta">
+            <div class="tx-name">${r.studentName} → ${r.bank}<span class="badge badge-pending" style="margin-left:8px;">Pending</span></div>
+            <div class="tx-date">Acct ending ${r.accountNumber.slice(-4)} · Routing ${r.routingNumber} · Name on account: ${r.accountHolderName}</div>
+            <div class="tx-date">${fmtDate(r.ts)}</div>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div class="tx-amt neg" style="margin-bottom:10px;">${fmt(r.amount)}</div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-mint btn-sm" onclick="approveTransfer('${r.id}')">Approve</button>
+            <button class="btn btn-danger btn-sm" onclick="denyTransfer('${r.id}')">Deny</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  if(resolved.length){
+    html += resolved.map(r=>`
+      <div class="tx-row">
+        <div class="tx-left">
+          <div class="tx-icon ${r.status==='approved'?'in':'out'}">${r.status==='approved'?'✓':'✕'}</div>
+          <div class="tx-meta">
+            <div class="tx-name">${r.studentName} → ${r.bank}
+              <span class="badge ${r.status==='approved'?'badge-mint':'badge-denied'}" style="margin-left:8px;">${r.status}</span>
+            </div>
+            <div class="tx-date">${fmtDate(r.ts)}</div>
+          </div>
+        </div>
+        <div class="tx-amt neg">${fmt(r.amount)}</div>
+      </div>
+    `).join('');
+  }
+
+  list.innerHTML = html;
+}
+
+function renderPendingChecks(){
+  const list = document.getElementById('pending-checks-list');
+  const all = (db.pendingChecks || []).slice().sort((a,b)=>b.ts-a.ts);
+  const pending = all.filter(c=>c.status==='pending');
+  const resolved = all.filter(c=>c.status!=='pending').slice(0,8);
+
+  if(!pending.length && !resolved.length){
+    list.innerHTML = `<div class="empty-state">No check deposits yet.</div>`;
+    return;
+  }
+
+  let html = '';
+
+  if(pending.length){
+    html += pending.map(c=>`
+      <div class="tx-row" style="align-items:flex-start;">
+        <div class="tx-left" style="align-items:flex-start;">
+          <div style="display:flex; gap:6px;">
+            <img src="${c.front}" class="check-thumb" onclick="viewCheckImage('${c.id}','front')" title="Front of check">
+            <img src="${c.back}" class="check-thumb" onclick="viewCheckImage('${c.id}','back')" title="Back of check">
+          </div>
+          <div class="tx-meta">
+            <div class="tx-name">${c.studentName}<span class="badge badge-pending" style="margin-left:8px;">Pending</span></div>
+            <div class="tx-date">${fmtDate(c.ts)}</div>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div class="tx-amt pos" style="margin-bottom:10px;">${fmt(c.amount)}</div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-mint btn-sm" onclick="approveCheck('${c.id}')">Approve</button>
+            <button class="btn btn-danger btn-sm" onclick="denyCheck('${c.id}')">Deny</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  if(resolved.length){
+    html += resolved.map(c=>`
+      <div class="tx-row">
+        <div class="tx-left">
+          <div style="display:flex; gap:6px;">
+            <img src="${c.front}" class="check-thumb" onclick="viewCheckImage('${c.id}','front')" title="Front of check">
+            <img src="${c.back}" class="check-thumb" onclick="viewCheckImage('${c.id}','back')" title="Back of check">
+          </div>
+          <div class="tx-meta">
+            <div class="tx-name">${c.studentName}
+              <span class="badge ${c.status==='approved'?'badge-mint':'badge-denied'}" style="margin-left:8px;">${c.status}</span>
+            </div>
+            <div class="tx-date">${fmtDate(c.ts)}</div>
+          </div>
+        </div>
+        <div class="tx-amt pos">${fmt(c.amount)}</div>
+      </div>
+    `).join('');
+  }
+
+  list.innerHTML = html;
+}
+
+function viewCheckImage(checkId, side){
+  const chk = db.pendingChecks.find(c=>c.id===checkId);
+  if(!chk) return;
+  const root = document.getElementById('modal-root');
+  root.innerHTML = `
+    <div class="modal-overlay" onclick="if(event.target===this) closeModal()">
+      <div class="modal" style="max-width:560px; text-align:center;">
+        <h3 style="margin-bottom:14px;">${side === 'front' ? 'Front' : 'Back'} of check — ${chk.studentName}</h3>
+        <img src="${chk[side]}" style="width:100%; border-radius:8px; border:1px solid var(--line);">
+        <div class="modal-actions">
+          <button class="btn btn-ghost" onclick="closeModal()" style="flex:none; width:100%;">Close</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderWithdrawals(){
+  const list = document.getElementById('withdrawals-list');
+  const all = (db.withdrawals || []).slice().sort((a,b)=>b.ts-a.ts);
+  if(!all.length){
+    list.innerHTML = `<div class="empty-state">No withdrawals yet.</div>`;
+    return;
+  }
+  const statusLabels = {
+    awaiting_verification: 'ID Review',
+    processing: 'Processing',
+    completed: 'Completed',
+    denied: 'Denied'
+  };
+  const statusClass = {
+    awaiting_verification: 'badge-pending',
+    processing: 'badge-pending',
+    completed: 'badge-mint',
+    denied: 'badge-denied'
+  };
+  list.innerHTML = all.map(w=>{
+    const methodDetail = w.method === 'ach'
+      ? `ACH to ${w.bank} · Acct ending ${w.accountNumber.slice(-4)} · Routing ${w.routingNumber} · ${w.accountHolderName}`
+      : `Check mailed to ${w.address}, ${w.city}, ${w.state} ${w.zip} · Payable to ${w.checkName}`;
+    const etaLine = w.eta ? ` · Expected by ${fmtDate(w.eta)}` : '';
+    return `
+      <div class="tx-row" style="align-items:flex-start;">
+        <div class="tx-left" style="align-items:flex-start;">
+          ${w.idImage ? `<img src="${w.idImage}" class="check-thumb" onclick="viewWithdrawalId('${w.id}')" title="View uploaded ID">` : `<div class="tx-icon out" style="margin-top:2px;">↑</div>`}
+          <div class="tx-meta">
+            <div class="tx-name">${w.studentName} — ${w.method === 'ach' ? 'ACH' : 'Mailed check'}
+              <span class="badge ${statusClass[w.status]}" style="margin-left:8px;">${statusLabels[w.status]}</span>
+            </div>
+            <div class="tx-date">${methodDetail}</div>
+            <div class="tx-date">Submitted ${fmtDate(w.ts)}${etaLine}</div>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div class="tx-amt neg" style="margin-bottom:10px;">${fmt(w.amount)}</div>
+          ${w.status === 'awaiting_verification' ? `
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn-mint btn-sm" onclick="approveWithdrawal('${w.id}')">Approve</button>
+              <button class="btn btn-danger btn-sm" onclick="denyWithdrawal('${w.id}')">Deny</button>
+            </div>
+          ` : ''}
+          ${w.status === 'processing' ? `<button class="btn btn-ghost btn-sm" onclick="markWithdrawalComplete('${w.id}')">Mark completed</button>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function viewWithdrawalId(id){
+  const wd = db.withdrawals.find(w=>w.id===id);
+  if(!wd || !wd.idImage) return;
+  const root = document.getElementById('modal-root');
+  root.innerHTML = `
+    <div class="modal-overlay" onclick="if(event.target===this) closeModal()">
+      <div class="modal" style="max-width:560px; text-align:center;">
+        <h3 style="margin-bottom:14px;">ID uploaded by ${wd.studentName}</h3>
+        <img src="${wd.idImage}" style="width:100%; border-radius:8px; border:1px solid var(--line);">
+        <div class="modal-actions">
+          <button class="btn btn-ghost" onclick="closeModal()" style="flex:none; width:100%;">Close</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function markWithdrawalComplete(id){
+  const wd = db.withdrawals.find(w=>w.id===id);
+  if(!wd || wd.status !== 'processing') return;
+  wd.status = 'completed';
+  saveDB(db);
+  renderAdminView();
+  showToast("Withdrawal marked as completed.");
+}
+
+function renderCardRequests(){
+  const list = document.getElementById('card-requests-list');
+  const all = (db.cardRequests || []).slice().sort((a,b)=>b.ts-a.ts);
+  if(!all.length){
+    list.innerHTML = `<div class="empty-state">No card requests yet.</div>`;
+    return;
+  }
+  list.innerHTML = all.map(r=>`
+    <div class="tx-row" style="align-items:flex-start;">
+      <div class="tx-left" style="align-items:flex-start;">
+        <div class="tx-icon out" style="margin-top:2px;">✉</div>
+        <div class="tx-meta">
+          <div class="tx-name">${r.studentName}
+            <span class="badge ${r.status==='pending' ? 'badge-pending' : 'badge-mint'}" style="margin-left:8px;">${r.status === 'pending' ? 'Pending' : 'Mailed'}</span>
+          </div>
+          <div class="tx-date">Card name: ${r.cardName}</div>
+          <div class="tx-date">Mail to: ${r.address}, ${r.city}, ${r.state} ${r.zip}</div>
+          <div class="tx-date">${fmtDate(r.ts)}</div>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        ${r.status === 'pending' ? `<button class="btn btn-mint btn-sm" onclick="fulfillCardRequest('${r.id}')">Mark mailed</button>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderAdminView(){
+  renderPendingTransfers();
+  renderPendingChecks();
+  renderWithdrawals();
+  renderCardRequests();
+  renderBannerAdminList();
+  renderAppBgAdminPreviews();
+  const tbody = document.getElementById('admin-accounts-table');
+  const entries = Object.entries(db.students);
+  if(!entries.length){
+    tbody.innerHTML = `<tr><td colspan="6" class="empty-state">No student accounts yet — create one above.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = entries.map(([num, s])=>`
+    <tr>
+      <td><strong>${s.name}</strong></td>
+      <td class="mono">${num}</td>
+      <td class="mono">${s.pin}</td>
+      <td class="mono"><span class="badge badge-mint">${fmt(s.balance)}</span></td>
+      <td>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+          <input type="number" step="0.01" placeholder="Amount" id="fund-${num}" style="width:90px; padding:6px 8px; border:1px solid var(--line); border-radius:5px; font-family:inherit;">
+          <input type="datetime-local" id="fund-date-${num}" style="padding:6px 8px; border:1px solid var(--line); border-radius:5px; font-family:inherit; font-size:12.5px;" title="Leave blank to use right now">
+          <button class="btn btn-ghost btn-sm" onclick="adjustBalance('${num}', 1)">Add</button>
+          <button class="btn btn-ghost btn-sm" onclick="adjustBalance('${num}', -1)">Deduct</button>
+        </div>
+      </td>
+      <td><button class="btn btn-danger btn-sm" onclick="deleteStudent('${num}')">Remove</button></td>
+    </tr>
+  `).join('');
+}
+
+function createStudent(){
+  const name = document.getElementById('new-stu-name').value.trim();
+  const balance = parseFloat(document.getElementById('new-stu-balance').value) || 0;
+  const phone = document.getElementById('new-stu-phone').value.trim();
+  const email = document.getElementById('new-stu-email').value.trim();
+  const address = document.getElementById('new-stu-address').value.trim();
+  const cardExpInput = document.getElementById('new-stu-cardexp').value.trim();
+  if(!name){ showToast("Enter the student's name."); return; }
+
+  const acct = genAcctNumber();
+  const pin = genPin();
+  db.students[acct] = {
+    name, pin, balance: Math.round(balance*100)/100,
+    phone, email, address,
+    photo: newStudentPhoto || null,
+    routingNumber: genRoutingNumber(),
+    debitCard: {
+      number: genDebitCardNumber(),
+      exp: cardExpInput || genExpiry(),
+      cvv: genCVV(),
+      locked: false
+    },
+    tx: balance > 0 ? [{label:"Opening deposit", amount: balance, ts: Date.now()}] : []
+  };
+  saveDB(db);
+
+  document.getElementById('new-stu-name').value = '';
+  document.getElementById('new-stu-balance').value = '';
+  document.getElementById('new-stu-phone').value = '';
+  document.getElementById('new-stu-email').value = '';
+  document.getElementById('new-stu-address').value = '';
+  document.getElementById('new-stu-cardexp').value = '';
+  document.getElementById('profile-pic-preview').classList.add('hidden');
+  document.getElementById('profile-pic-preview').src = '';
+  document.getElementById('profile-pic-placeholder').classList.remove('hidden');
+  newStudentPhoto = null;
+  document.getElementById('new-acct-result').innerHTML = `
+    <div class="creds-box">
+      Account created for <strong>${name}</strong><br>
+      Account #: <strong>${acct}</strong><br>
+      PIN: <strong>${pin}</strong><br>
+      <span style="color:var(--muted); font-family:inherit;">Share these with the student so they can log in.</span>
+    </div>
+  `;
+  renderAdminView();
+  showToast("Student account created.");
+}
+
+function adjustBalance(acct, dir){
+  const input = document.getElementById(`fund-${acct}`);
+  const dateInput = document.getElementById(`fund-date-${acct}`);
+  const amt = parseFloat(input.value);
+  if(!(amt > 0)){ showToast("Enter an amount first."); return; }
+  const s = db.students[acct];
+  if(dir < 0 && amt > s.balance){ showToast("Can't deduct more than the balance."); return; }
+
+  let customTs = null;
+  if(dateInput.value){
+    const picked = new Date(dateInput.value);
+    if(picked > new Date()){ showToast("Pick a date in the past, not the future."); return; }
+    customTs = picked.getTime();
+  }
+
+  recordTx(acct, dir > 0 ? "Deposit" : "Withdrawal", dir*amt, customTs);
+  saveDB(db);
+  input.value = '';
+  dateInput.value = '';
+  renderAdminView();
+  showToast(dir > 0 ? "Funds added." : "Funds deducted.");
+}
+
+function deleteStudent(acct){
+  if(!confirm(`Remove ${db.students[acct].name}'s account? This can't be undone.`)) return;
+  delete db.students[acct];
+  saveDB(db);
+  renderAdminView();
+  showToast("Account removed.");
+}
+
+function changeAdminPass(){
+  const val = document.getElementById('new-admin-pass').value.trim();
+  if(!val){ showToast("Enter a new passcode."); return; }
+  db.adminPass = val;
+  saveDB(db);
+  document.getElementById('new-admin-pass').value = '';
+  showToast("Admin passcode updated.");
+}
+
+function resetAllData(){
+  if(!confirm("This will delete every student account and all transactions. Continue?")) return;
+  localStorage.removeItem(DB_KEY);
+  db = loadDB();
+  renderAdminView();
+  applyAppBackgrounds();
+  showToast("Classroom data reset.");
+}
+
+applyAppBackgrounds();
+</script>
+
+</body>
+</html>
